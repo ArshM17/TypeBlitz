@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Multiplayer Typing Race</title>
+</head>
+<body>
+  <h1>Welcome to Multiplayer Typing Race!</h1>
+  
+  <form id="joinForm">
+    <div>
+      <label for="username">Username:</label>
+      <input type="text" id="username" required>
+    </div>
+    <div>
+      <label for="roomId">Room ID:</label>
+      <input type="text" id="roomId" required>
+    </div>
+    <button type="submit">Join Room</button>
+  </form>
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="./client.js"></script>
+   <!-- <script>
+    var socket = io();
+   </script> -->
+</body>
+</html>
