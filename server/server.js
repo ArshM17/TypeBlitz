@@ -12,14 +12,21 @@ app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "../client", "home.html"));
 });
 
+app.get("/race", (req, res) => {
+  res.sendFile(path.join(__dirname, "../client", "race.html"));
+});
+
 app.use(express.static(path.join(__dirname, "../client")));
 
 io.on("connection", (socket) => {
   console.log(`new player: ${socket.id}`);
-  socket.on("new-player", (id) => {
+
+  socket.on("new-player", (id, roomId) => {
     PLAYERS.push({ id: id, progress: 0 });
-    io.emit("update-players", PLAYERS);
+    console.log(PLAYERS);
+    socket.to(roomId).emit("update-players", PLAYERS);
   });
+
   socket.on("disconnect", () => {
     var idx;
     for (var i = 0; i < PLAYERS.length; i++) {
@@ -30,6 +37,10 @@ io.on("connection", (socket) => {
     }
     PLAYERS.splice(idx, 1);
     io.emit("update-players", PLAYERS);
+  });
+
+  socket.on("join-room", (roomId) => {
+    socket.join(roomId);
   });
 });
 
