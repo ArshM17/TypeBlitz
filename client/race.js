@@ -17,3 +17,11 @@ socket.on("update-players", (list) => {
   PLAYERS = list;
   console.log(PLAYERS);
 });
+
+window.onbeforeunload = function () {
+  window.setTimeout(function () {
+    window.location = "http://localhost:3000";
+  }, 0);
+  window.onbeforeunload = null; // necessary to prevent infinite loop, that kills your browser
+  // header.innerText = "refresh";
+};
