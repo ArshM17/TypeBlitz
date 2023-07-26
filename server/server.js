@@ -41,17 +41,38 @@ io.on("connection", (socket) => {
       }
     }
     PLAYERS.splice(idx, 1);
-    console.log(PLAYERS);
     io.to(room).emit("update-players", PLAYERS);
   });
 
-  socket.on("join-room", (roomId) => {
+  socket.on("join-room", (roomId, userName) => {
     socket.join(roomId);
     if (ROOMS.has(roomId)) {
-      ROOMS.get(roomId).push({ id: socket.id, progress: 0 });
+      ROOMS.get(roomId).push({
+        id: socket.id,
+        userName: userName,
+        progress: 0,
+      });
     } else {
-      ROOMS.set(roomId, [{ id: socket.id, progress: 0 }]);
+      ROOMS.set(roomId, [{ id: socket.id, userName: userName, progress: 0 }]);
     }
+    if (ROOMS.get(roomId).length >= 2) {
+      io.to(roomId).emit("start-race");
+    }
+  });
+
+  socket.on("update-info", (newValue, roomId) => {
+    // console.log(roomId, newValue);
+    var PLAYERS = ROOMS.get(roomId);
+    // console.log(PLAYERS);
+    var idx;
+    for (var i = 0; i < PLAYERS.length; i++) {
+      if (PLAYERS[i].id == socket.id) {
+        idx = i;
+        break;
+      }
+    }
+    PLAYERS[idx].progress += newValue;
+    io.to(roomId).emit("update-players", PLAYERS);
   });
 });
 
