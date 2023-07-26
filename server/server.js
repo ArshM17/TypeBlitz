@@ -42,7 +42,7 @@ io.on("connection", (socket) => {
     }
     PLAYERS.splice(idx, 1);
     console.log(PLAYERS);
-    io.emit("update-players", PLAYERS);
+    io.to(room).emit("update-players", PLAYERS);
   });
 
   socket.on("join-room", (roomId) => {
