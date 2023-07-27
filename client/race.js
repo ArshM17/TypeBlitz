@@ -1,15 +1,20 @@
 const socket = io();
 var PLAYERS = [];
+var isReady = false;
 
 const userName = localStorage.getItem("userName");
 const roomId = localStorage.getItem("roomId");
 const header = document.getElementById("header");
 const container = document.getElementById("container");
+const readyBtn = document.getElementById("readyBtn");
+const countdownDisplay = document.getElementById("countdown-timer");
+let countDownTimer;
+let countdownTime;
 
 header.innerText = `Welcome to room:${roomId}, ${userName}`;
 
 socket.on("connect", () => {
-  console.log(socket.id);
+  // console.log(socket.id);
   socket.emit("join-room", roomId, userName);
   socket.emit("new-player", socket.id, roomId);
   // generateRandomNumberEverySecond();
@@ -17,7 +22,7 @@ socket.on("connect", () => {
 
 socket.on("update-players", (list) => {
   PLAYERS = list;
-  console.log(PLAYERS);
+  // console.log(PLAYERS);
   createPlayerDivs(PLAYERS);
 });
 
@@ -37,10 +42,12 @@ function createPlayerDivs(playersArray) {
   playersArray.forEach((player) => {
     const playerDiv = document.createElement("div");
     playerDiv.innerText = player.userName;
+    playerDiv.classList.add("car");
     playerDiv.style.position = "relative";
     playerDiv.style.left = `${player.progress}%`;
     playerDiv.style.backgroundColor = "blue"; // You can set other styles as needed
     container.appendChild(playerDiv);
+    playerDiv.style.color = player.isReady ? "green" : "red";
   });
 }
 
@@ -53,4 +60,47 @@ function generateRandomNumberEverySecond() {
     // console.log(randomNumber);
     socket.emit("update-info", randomNumber, roomId);
   }, 1000);
+}
+
+readyBtn.addEventListener("click", (e) => {
+  isReady = !isReady;
+  console.log(isReady);
+  if (isReady) {
+    readyBtn.innerText = "Not Ready";
+    socket.emit("ready", roomId);
+  } else {
+    readyBtn.innerText = "Ready";
+    socket.emit("not-ready", roomId);
+  }
+});
+
+socket.on("start-countdown", () => {
+  startCountdown();
+});
+
+socket.on("stop-countdown", () => {
+  stopCountdown();
+});
+
+function startCountdown() {
+  countdownTime = 10;
+  countdownDisplay.innerText = `Race starts in ${countdownTime} seconds`;
+  countDownTimer = setInterval(() => {
+    countdownTime--;
+    countdownDisplay.innerText = `Race starts in ${countdownTime} seconds`;
+
+    if (countdownTime <= 0) {
+      clearInterval(countDownTimer);
+      countdownDisplay.innerText = "Type!";
+      generateRandomNumberEverySecond();
+    } else if (countdownTime <= 6) {
+      // After 3 seconds of starting the timer, disable all ready buttons.
+      readyBtn.disabled = true;
+    }
+  }, 1000); // 1000 milliseconds = 1 second
+}
+
+function stopCountdown() {
+  countdownDisplay.innerText = "Waiting for all players get ready...";
+  clearInterval(countDownTimer);
 }
