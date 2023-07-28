@@ -5,19 +5,22 @@ var isReady = false;
 const userName = localStorage.getItem("userName");
 const roomId = localStorage.getItem("roomId");
 const header = document.getElementById("header");
-const container = document.getElementById("container");
+const container = document.getElementById("car-container");
 const readyBtn = document.getElementById("readyBtn");
 const countdownDisplay = document.getElementById("countdown-timer");
 let countDownTimer;
 let countdownTime;
+const RANDOM_QUOTE_API_URL = "http://metaphorpsum.com/paragraphs/1";
 
 header.innerText = `Welcome to room:${roomId}, ${userName}`;
 
 socket.on("connect", () => {
   // console.log(socket.id);
   socket.emit("join-room", roomId, userName);
+  socket.emit("get-para", roomId);
   socket.emit("new-player", socket.id, roomId);
   // generateRandomNumberEverySecond();
+  // renderNewQuote();
 });
 
 socket.on("update-players", (list) => {
@@ -52,19 +55,22 @@ function createPlayerDivs(playersArray) {
 }
 
 function generateRandomNumberEverySecond() {
-  const min = 3; // Minimum value for the random number (inclusive)
-  const max = 6; // Maximum value for the random number (inclusive)
+  quoteInputElement.disabled = false;
+  quoteInputElement.focus();
 
   setInterval(() => {
-    const randomNumber = Math.floor(Math.random() * (max - min + 1)) + min;
-    // console.log(randomNumber);
-    socket.emit("update-info", randomNumber, roomId);
+    // const randomNumber = Math.floor(Math.random() * (max - min + 1)) + min;
+    socket.emit(
+      "update-info",
+      (correctPart.length / quote.length) * 100,
+      roomId
+    );
   }, 1000);
 }
 
 readyBtn.addEventListener("click", (e) => {
   isReady = !isReady;
-  console.log(isReady);
+  // console.log(isReady);
   if (isReady) {
     readyBtn.innerText = "Not Ready";
     socket.emit("ready", roomId);
@@ -82,6 +88,11 @@ socket.on("stop-countdown", () => {
   stopCountdown();
 });
 
+socket.on("send-para", (para) => {
+  // console.log(para);
+  quote = para;
+});
+
 function startCountdown() {
   countdownTime = 10;
   countdownDisplay.innerText = `Race starts in ${countdownTime} seconds`;
@@ -93,9 +104,11 @@ function startCountdown() {
       clearInterval(countDownTimer);
       countdownDisplay.innerText = "Type!";
       generateRandomNumberEverySecond();
+      startTimer();
     } else if (countdownTime <= 6) {
-      // After 3 seconds of starting the timer, disable all ready buttons.
+      // After 4 seconds of starting the timer, disable all ready buttons.
       readyBtn.disabled = true;
+      renderNewQuote();
     }
   }, 1000); // 1000 milliseconds = 1 second
 }
@@ -103,4 +116,85 @@ function startCountdown() {
 function stopCountdown() {
   countdownDisplay.innerText = "Waiting for all players get ready...";
   clearInterval(countDownTimer);
+}
+
+//--------------------------------------------------------------------------//
+
+// const RANDOM_QUOTE_API_URL = "http://metaphorpsum.com/paragraphs/1";
+const quoteDisplayElement = document.getElementById("quoteDisplay");
+const quoteInputElement = document.getElementById("quoteInput");
+const timerElement = document.getElementById("timer");
+
+let quote;
+let correctPart = "";
+let wordsArray;
+let currIndex = 0;
+quoteInputElement.disabled = true;
+
+quoteInputElement.addEventListener("input", (e) => {
+  const typed = quoteInputElement.value;
+  if (typed.includes(" ")) {
+    if (wordsArray[currIndex] + " " === typed) {
+      quoteInputElement.value = "";
+      currIndex++;
+      correctPart += typed;
+      if (currIndex == wordsArray.length) {
+        quoteInputElement.disabled = true;
+      }
+      return;
+    }
+  }
+  const check = correctPart + typed;
+  const arrayQuote = quoteDisplayElement.querySelectorAll("span");
+  const arrayValue = check.split("");
+
+  let correct = true;
+  arrayQuote.forEach((characterSpan, index) => {
+    const character = arrayValue[index];
+    if (character == null) {
+      characterSpan.classList.remove("correct");
+      characterSpan.classList.remove("incorrect");
+      correct = false;
+    } else if (character === characterSpan.innerText && correct) {
+      characterSpan.classList.add("correct");
+      characterSpan.classList.remove("incorrect");
+      correct = true;
+    } else {
+      characterSpan.classList.remove("correct");
+      characterSpan.classList.add("incorrect");
+      correct = false;
+    }
+  });
+});
+
+// function getRandomQuote() {
+//   return fetch(RANDOM_QUOTE_API_URL)
+//     .then((response) => response.text())
+//     .then((data) => data);
+// }
+
+function renderNewQuote() {
+  // quote = await getRandomQuote();
+  wordsArray = quote.split(" ");
+  quoteDisplayElement.innerHTML = "";
+  quote.split("").forEach((character) => {
+    const characterSpan = document.createElement("span");
+    characterSpan.innerText = character;
+    quoteDisplayElement.appendChild(characterSpan);
+  });
+  quoteInputElement.value = null;
+  // startTimer();
+}
+
+let startTime;
+function startTimer() {
+  timerElement.innerText = 0;
+  startTime = new Date();
+  setInterval(() => {
+    timer.innerText = getTimerTime();
+  }, 1000);
+}
+
+function getTimerTime() {
+  return Math.floor((new Date() - startTime) / 1000);
 }

@@ -10,10 +10,15 @@
 <body>
     <h1 id="header">Welcome Player</h1>
     <div id="countdown-timer">Waiting for all players to get ready...</div>
-    <div id="container">
+    <div id="car-container">
         <!-- <div class="car">First</div> -->
     </div>
     <button id="readyBtn">Ready</button>
+    <div class="timer" id="timer"></div>
+    <div class="container">
+        <div class="quote-display" id="quoteDisplay">Text will be displayed 5s before race start</div>
+        <input id="quoteInput" class="quote-input" autofocus maxlength="15"></input>
+    </div>
     <script src="/socket.io/socket.io.js"></script>
     <script src="./race.js"></script>
 </body>
