@@ -73,3 +73,8 @@
     background-color: red;
     text-decoration: underline;
   }
+
+  #car-container{
+    background-color: yellow;
+    width: 80%;
+  }

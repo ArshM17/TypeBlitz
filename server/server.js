@@ -77,11 +77,12 @@ io.on("connection", (socket) => {
   });
 
   socket.on("get-para", (roomId) => {
-    if (!PARAS.has(roomId)) {
+    if (!PARAS.get(roomId)) {
       let ind = Math.floor(Math.random() * (paragraphs.length + 1));
       let para = paragraphs[ind];
       PARAS.set(roomId, para);
     }
+    // console.log(PARAS.get(roomId));
     io.to(roomId).emit("send-para", PARAS.get(roomId));
   });
 
@@ -110,10 +111,21 @@ io.on("connection", (socket) => {
     // console.log(roomId, newValue);
     let PLAYERS = ROOMS.get(roomId);
     // console.log(PLAYERS);
+    let count = 0;
+    for (let i = 0; i < PLAYERS.length; i++) {
+      if (PLAYERS[i].progress >= 100) count++;
+    }
     let idx = getSocketIndex(PLAYERS, socket.id);
     PLAYERS[idx].progress = newValue;
-    PLAYERS[idx].speed = `${speed} wpm`;
+    if (newValue >= 100) {
+      PLAYERS[idx].speed = `Rank ${count + 1}(${speed} wpm)`;
+    } else {
+      PLAYERS[idx].speed = `${speed} wpm`;
+    }
     io.to(roomId).emit("update-players", PLAYERS);
+    if (newValue >= 100 && count == PLAYERS.length - 1) {
+      io.to(roomId).emit("game-over");
+    }
   });
 });
 

@@ -1,16 +1,18 @@
 const socket = io();
 var PLAYERS = [];
 var isReady = false;
-
-const userName = localStorage.getItem("userName");
-const roomId = localStorage.getItem("roomId");
+var gameOver = false;
+let userName = localStorage.getItem("userName");
+let roomId = localStorage.getItem("roomId");
 const header = document.getElementById("header");
 const container = document.getElementById("car-container");
 const readyBtn = document.getElementById("readyBtn");
+const raceAgainBtn = document.getElementById("raceAgainBtn");
+raceAgainBtn.style.visibility = "hidden";
 const countdownDisplay = document.getElementById("countdown-timer");
 let countDownTimer;
 let countdownTime;
-const RANDOM_QUOTE_API_URL = "http://metaphorpsum.com/paragraphs/1";
+// const RANDOM_QUOTE_API_URL = "http://metaphorpsum.com/paragraphs/1";
 
 header.innerText = `Welcome to room:${roomId}, ${userName}`;
 
@@ -34,17 +36,20 @@ socket.on("start-race", () => {
 });
 
 window.onbeforeunload = function () {
-  window.setTimeout(function () {
-    window.location = "http://localhost:3000";
-  }, 0);
-  window.onbeforeunload = null;
+  if (!gameOver) {
+    window.setTimeout(function () {
+      window.location = "http://localhost:3000";
+    }, 0);
+    window.onbeforeunload = null;
+  }
 };
 
 function createPlayerDivs(playersArray) {
   container.innerHTML = "";
+
   playersArray.forEach((player) => {
     const playerDiv = document.createElement("div");
-    playerDiv.innerText = player.userName;
+    playerDiv.innerText = player.userName + " " + player.speed;
     playerDiv.classList.add("car");
     playerDiv.style.position = "relative";
     playerDiv.style.left = `${player.progress}%`;
@@ -69,7 +74,8 @@ function generateRandomNumberEverySecond() {
     socket.emit(
       "update-info",
       (correctPart.length / quote.length) * 100,
-      roomId
+      roomId,
+      correctPart.length / 5
     );
     // console.log("stop");
   }, 1000);
@@ -96,7 +102,7 @@ socket.on("stop-countdown", () => {
 });
 
 socket.on("send-para", (para) => {
-  // console.log(para);
+  console.log(para);
   quote = para;
 });
 
@@ -203,19 +209,43 @@ function renderNewQuote() {
 // }
 let time, timer;
 function startTimer() {
-  time = 10;
+  time = 20;
   timerElement.innerText = time;
   timer = setInterval(() => {
     time--;
     timerElement.innerText = time;
 
     if (time <= 0) {
+      // console.log(PLAYERS);
       clearInterval(timer);
+      clearInterval(updater);
       timerElement.innerText = "Time Up!";
       quoteInputElement.disabled = true;
+      roomId = roomId + "rematch";
+      localStorage.setItem("roomId", roomId);
+      // localStorage.setItem("userName", userName);
+      gameOver = true;
+      //make rematch button visible
+      raceAgainBtn.style.visibility = "visible";
+      // setTimeout(() => {
+      //   window.location = "http://localhost:3000/race";
+      // }, 3000);
     }
   }, 1000); // 1000 milliseconds = 1 second
 }
+
+socket.on("game-over", () => {
+  clearInterval(timer);
+  clearInterval(updater);
+  roomId = roomId + "rematch";
+  localStorage.setItem("roomId", roomId);
+  gameOver = true;
+  raceAgainBtn.style.visibility = "visible";
+});
+
+raceAgainBtn.addEventListener("click", () => {
+  window.location = "http://localhost:3000/race";
+});
 
 // function getTimerTime() {
 //   return Math.floor((new Date() - startTime) / 1000);
