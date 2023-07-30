@@ -1,3 +1,4 @@
+const { clear } = require("console");
 const express = require("express");
 const app = express();
 const http = require("http");
@@ -10,18 +11,19 @@ const io = new Server(server);
 // const PLAYERS = [];
 const ROOMS = new Map();
 const PARAS = new Map();
-const paragraphs = [
-  "Their draw was, in this moment, a valval interactive. Recent controversy aside, they were lost without the oscine risk that composed their mini-skirt. Some stotious insulations are thought of simply as grandfathers.",
-  "Some assert that an airborne end is a pasta of the mind. A tuba is the decade of a reason. The tuna could be said to resemble downstairs priests.",
-  "Pollutions are sneaky tempers. Those spears are nothing more than policemen. A fitting camel is a refund of the mind.",
-  "Extending this logic, the immane bacon reveals itself as an expert carp to those who look. The laborers could be said to resemble outcaste boards. A backstair dog's saw comes with it the thought that the deathly knowledge is a latex. Some assert that an alarm is the lock of an engineer.",
-  "What we don't know for sure is whether or not the green of a card becomes a thriftless step-father. Extending this logic, a place is the voyage of an anger. A jasmine sees an acrylic as a mellow sea. The gemini is a season.",
-  "The coastward denim reveals itself as a waxing calf to those who look. This could be, or perhaps the first lovelorn gemini is, in its own way, an undercloth. The first docile crown is, in its own way, a bulb. In recent years, a pepper can hardly be considered a legless shrine without also being a sleet.",
-  "Though we assume the latter, those internets are nothing more than appeals. They were lost without the aggrieved lumber that composed their banker. They were lost without the mawkish bread that composed their office.",
-  "A painful shingle's veterinarian comes with it the thought that the loathsome Thursday is an effect. Extending this logic, a reading is a floury oyster. This is not to discredit the idea that before amounts, signatures were only summers. A pungent corn is a cormorant of the mind.",
-  "An inch of the dock is assumed to be a chesty latex. Their ramie was, in this moment, a guardant literature. The flax is a turret.",
-  "Some posit the hurried class to be less than bloomy. Some assert that a newsstand is an unripe sprout. A nightly panther is a green of the mind. Far from the truth, they were lost without the crownless psychology that composed their weasel.",
-];
+// const paragraphs = [
+//   "Their draw was, in this moment, a valval interactive. Recent controversy aside, they were lost without the oscine risk that composed their mini-skirt. Some stotious insulations are thought of simply as grandfathers.",
+//   "Some assert that an airborne end is a pasta of the mind. A tuba is the decade of a reason. The tuna could be said to resemble downstairs priests.",
+//   "Pollutions are sneaky tempers. Those spears are nothing more than policemen. A fitting camel is a refund of the mind.",
+//   "Extending this logic, the immane bacon reveals itself as an expert carp to those who look. The laborers could be said to resemble outcaste boards. A backstair dog's saw comes with it the thought that the deathly knowledge is a latex. Some assert that an alarm is the lock of an engineer.",
+//   "What we don't know for sure is whether or not the green of a card becomes a thriftless step-father. Extending this logic, a place is the voyage of an anger. A jasmine sees an acrylic as a mellow sea. The gemini is a season.",
+//   "The coastward denim reveals itself as a waxing calf to those who look. This could be, or perhaps the first lovelorn gemini is, in its own way, an undercloth. The first docile crown is, in its own way, a bulb. In recent years, a pepper can hardly be considered a legless shrine without also being a sleet.",
+//   "Though we assume the latter, those internets are nothing more than appeals. They were lost without the aggrieved lumber that composed their banker. They were lost without the mawkish bread that composed their office.",
+//   "A painful shingle's veterinarian comes with it the thought that the loathsome Thursday is an effect. Extending this logic, a reading is a floury oyster. This is not to discredit the idea that before amounts, signatures were only summers. A pungent corn is a cormorant of the mind.",
+//   "An inch of the dock is assumed to be a chesty latex. Their ramie was, in this moment, a guardant literature. The flax is a turret.",
+//   "Some posit the hurried class to be less than bloomy. Some assert that a newsstand is an unripe sprout. A nightly panther is a green of the mind. Far from the truth, they were lost without the crownless psychology that composed their weasel.",
+// ];
+const paragraphs = ["Test para this is."];
 
 app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "../client", "home.html"));
@@ -59,10 +61,17 @@ io.on("connection", (socket) => {
         userName: userName,
         progress: 0,
         isReady: false,
+        speed: "0 wpm",
       });
     } else {
       ROOMS.set(roomId, [
-        { id: socket.id, userName: userName, progress: 0, isReady: false },
+        {
+          id: socket.id,
+          userName: userName,
+          progress: 0,
+          isReady: false,
+          speed: "0 wpm",
+        },
       ]);
     }
   });
@@ -97,18 +106,13 @@ io.on("connection", (socket) => {
     io.to(roomId).emit("stop-countdown");
   });
 
-  socket.on("update-info", (newValue, roomId) => {
+  socket.on("update-info", (newValue, roomId, speed) => {
     // console.log(roomId, newValue);
     let PLAYERS = ROOMS.get(roomId);
     // console.log(PLAYERS);
     let idx = getSocketIndex(PLAYERS, socket.id);
-    // for (let i = 0; i < PLAYERS.length; i++) {
-    //   if (PLAYERS[i].id == socket.id) {
-    //     idx = i;
-    //     break;
-    //   }
-    // }
     PLAYERS[idx].progress = newValue;
+    PLAYERS[idx].speed = `${speed} wpm`;
     io.to(roomId).emit("update-players", PLAYERS);
   });
 });
@@ -136,8 +140,8 @@ function countReady(PLAYERS) {
   return count;
 }
 
-function getRandomQuote() {
-  return fetch(RANDOM_QUOTE_API_URL)
-    .then((response) => response.text())
-    .then((data) => data);
-}
+// function getRandomQuote() {
+//   return fetch(RANDOM_QUOTE_API_URL)
+//     .then((response) => response.text())
+//     .then((data) => data);
+// }

@@ -53,18 +53,25 @@ function createPlayerDivs(playersArray) {
     playerDiv.style.color = player.isReady ? "green" : "red";
   });
 }
-
+let updater;
 function generateRandomNumberEverySecond() {
   quoteInputElement.disabled = false;
   quoteInputElement.focus();
 
-  setInterval(() => {
+  updater = setInterval(() => {
     // const randomNumber = Math.floor(Math.random() * (max - min + 1)) + min;
+    // console.log(correctPart.length, quote.length);
+    if (correctPart.length >= quote.length) {
+      // console.log("clear");
+      clearInterval(updater);
+    }
+
     socket.emit(
       "update-info",
       (correctPart.length / quote.length) * 100,
       roomId
     );
+    // console.log("stop");
   }, 1000);
 }
 
@@ -186,15 +193,30 @@ function renderNewQuote() {
   // startTimer();
 }
 
-let startTime;
+// let startTime;
+// function startTimer() {
+//   timerElement.innerText = 0;
+//   startTime = new Date();
+//   setInterval(() => {
+//     timer.innerText = getTimerTime();
+//   }, 1000);
+// }
+let time, timer;
 function startTimer() {
-  timerElement.innerText = 0;
-  startTime = new Date();
-  setInterval(() => {
-    timer.innerText = getTimerTime();
-  }, 1000);
+  time = 10;
+  timerElement.innerText = time;
+  timer = setInterval(() => {
+    time--;
+    timerElement.innerText = time;
+
+    if (time <= 0) {
+      clearInterval(timer);
+      timerElement.innerText = "Time Up!";
+      quoteInputElement.disabled = true;
+    }
+  }, 1000); // 1000 milliseconds = 1 second
 }
 
-function getTimerTime() {
-  return Math.floor((new Date() - startTime) / 1000);
-}
+// function getTimerTime() {
+//   return Math.floor((new Date() - startTime) / 1000);
+// }
