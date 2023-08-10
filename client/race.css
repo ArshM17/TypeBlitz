@@ -1,28 +1,36 @@
-.car{
-    width: fit-content
-}
+  .car{
+      width: fit-content;
+      /* height: 100%; */
+      font-size: 1.2rem;
+      margin: 2px;
+      padding: 3px;
+      /* justify-content: center; */
+      background-color: white;
+  }
 
 * {
     box-sizing: border-box;
   }
   
   body {
-    /* display: flex;
+    display: flex;
     justify-content: center;
     align-items: center;
-    flex-direction: column; */
-    min-height: 100vh;
+    flex-direction: column;
+    height: 100vh;
+    width: 100vw;
+    overflow: hidden;
     margin: 0;
-    background-color: #1E0555;
+    background-color: antiquewhite  ;
   }
   
   body, .quote-input {
-    /* font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif; */
-    font-family: 'Courier New', Courier, monospace;
+    font-family: monospace;
   }
   
   .container {
-    background-color: #333;  
+    border: 2px solid black;
+    background-color: white;  
     padding: 1rem;
     border-radius: .5rem;
     width: 700px;
@@ -45,7 +53,7 @@
   
   .quote-input {
     background-color: transparent;
-    border: 2px solid #A1922E;
+    border: 2px solid #000;
     outline: none;
     width: 100%;
     /* height: 8rem; */
@@ -54,7 +62,7 @@
     padding: .5rem 1rem;
     font-size: 1rem;
     border-radius: .5rem;
-    color: white;
+    color: #333;
   }
   
   .quote-input:focus {
@@ -62,7 +70,7 @@
   }
   
   span{
-    color: white;
+    color: #333;
   }
   
   .correct {
@@ -75,6 +83,16 @@
   }
 
   #car-container{
-    background-color: yellow;
-    width: 80%;
+    background-color: #777;
+    width: 700px;
+    margin: 5px;
   }
+
+  #readyBtn, #raceAgainBtn{
+    border-radius: 5px;
+    padding: 10px;
+    font-size: 1.2rem;
+    margin-top: 10px;
+  }
+
+  

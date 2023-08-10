@@ -14,7 +14,7 @@ let countDownTimer;
 let countdownTime;
 // const RANDOM_QUOTE_API_URL = "http://metaphorpsum.com/paragraphs/1";
 
-header.innerText = `Welcome to room:${roomId}, ${userName}`;
+// header.innerText = `Welcome ${userName}`;
 
 socket.on("connect", () => {
   // console.log(socket.id);
@@ -38,7 +38,8 @@ socket.on("start-race", () => {
 window.onbeforeunload = function () {
   if (!gameOver) {
     window.setTimeout(function () {
-      window.location = "http://localhost:3000";
+      window.location = window.origin;
+      // window.location = "http://localhost:3000";
     }, 0);
     window.onbeforeunload = null;
   }
@@ -53,7 +54,7 @@ function createPlayerDivs(playersArray) {
     playerDiv.classList.add("car");
     playerDiv.style.position = "relative";
     playerDiv.style.left = `${player.progress}%`;
-    playerDiv.style.backgroundColor = "blue"; // You can set other styles as needed
+    // playerDiv.style.backgroundColor = "blue";
     container.appendChild(playerDiv);
     playerDiv.style.color = player.isReady ? "green" : "red";
   });
@@ -127,7 +128,7 @@ function startCountdown() {
 }
 
 function stopCountdown() {
-  countdownDisplay.innerText = "Waiting for all players get ready...";
+  countdownDisplay.innerText = "Waiting for all players to get ready...";
   clearInterval(countDownTimer);
 }
 
@@ -209,7 +210,7 @@ function renderNewQuote() {
 // }
 let time, timer;
 function startTimer() {
-  time = 20;
+  time = 40;
   timerElement.innerText = time;
   timer = setInterval(() => {
     time--;
@@ -244,7 +245,7 @@ socket.on("game-over", () => {
 });
 
 raceAgainBtn.addEventListener("click", () => {
-  window.location = "http://localhost:3000/race";
+  window.location = `${window.origin}/race`;
 });
 
 // function getTimerTime() {

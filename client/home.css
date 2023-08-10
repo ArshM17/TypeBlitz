@@ -1,0 +1,44 @@
+*{
+    font-family:  monospace;
+}
+
+body{
+    width: 100vw;
+    height: 100vh;
+    background-color: antiquewhite;
+    overflow: hidden;
+}
+
+.container{
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -70%);
+}
+
+.ip{
+    margin: 10px 0;
+    font-size: 2em;
+}
+
+input{
+    font-size: 2rem;
+}
+
+button{
+    position: absolute;
+    font-size: 1.5rem;
+    margin-top: 10px;
+    border-radius: 5px;
+    padding: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+h1{
+    font-size: 3em;
+}

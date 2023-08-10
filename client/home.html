@@ -2,21 +2,24 @@
 <html>
 <head>
   <title>Multiplayer Typing Race</title>
+  <link rel="stylesheet" href="home.css">
 </head>
 <body>
-  <h1>TypeBlitz</h1>
-  
-  <form id="form">
-    <div>
-      <label for="username">Username:</label>
-      <input type="text" id="username" required>
-    </div>
-    <div>
-      <label for="roomId">Room ID:</label>
-      <input type="text" id="roomId" required>
-    </div>
-    <button type="submit">Join Room</button>
-  </form>
+  <div class="container">
+    <h1>TypeBlitz</h1>
+    
+    <form id="form">
+      <div class="ip">
+        <label for="username">Username:</label>
+        <input type="text" id="username" required>
+      </div>
+      <div class="ip">
+        <label for="roomId">Room ID:</label>
+        <input type="text" id="roomId" required>
+      </div>
+      <button type="submit" id="subbtn">Join Room</button>
+    </form>
+  </div>
   <script src="./client.js"></script>
 </body>
 </html>
