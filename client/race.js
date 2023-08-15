@@ -50,7 +50,7 @@ function createPlayerDivs(playersArray) {
 
   playersArray.forEach((player) => {
     const playerDiv = document.createElement("div");
-    playerDiv.innerText = player.userName + " " + player.speed;
+    playerDiv.innerText = `${player.userName} (${player.speed})`;
     playerDiv.classList.add("car");
     playerDiv.style.position = "relative";
     playerDiv.style.left = `${player.progress}%`;
@@ -76,8 +76,9 @@ function generateRandomNumberEverySecond() {
       "update-info",
       (correctPart.length / quote.length) * 100,
       roomId,
-      correctPart.length / 5
+      Math.floor((correctPart.length / 5 / (60 - time)) * 60)
     );
+    // console.log(time);
     // console.log("stop");
   }, 1000);
 }
@@ -103,7 +104,7 @@ socket.on("stop-countdown", () => {
 });
 
 socket.on("send-para", (para) => {
-  console.log(para);
+  // console.log(para);
   quote = para;
 });
 
@@ -210,7 +211,7 @@ function renderNewQuote() {
 // }
 let time, timer;
 function startTimer() {
-  time = 40;
+  time = 60;
   timerElement.innerText = time;
   timer = setInterval(() => {
     time--;
