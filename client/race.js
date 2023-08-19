@@ -74,7 +74,7 @@ function generateRandomNumberEverySecond() {
 
     socket.emit(
       "update-info",
-      (correctPart.length / quote.length) * 100,
+      Math.min(100, (correctPart.length / quote.length) * 100),
       roomId,
       Math.floor((correctPart.length / 5 / (60 - time)) * 60)
     );
@@ -82,7 +82,6 @@ function generateRandomNumberEverySecond() {
     // console.log("stop");
   }, 1000);
 }
-
 readyBtn.addEventListener("click", (e) => {
   isReady = !isReady;
   // console.log(isReady);
@@ -242,6 +241,7 @@ socket.on("game-over", () => {
   roomId = roomId + "rematch";
   localStorage.setItem("roomId", roomId);
   gameOver = true;
+  timerElement.innerText = "Race over!";
   raceAgainBtn.style.visibility = "visible";
 });
 
